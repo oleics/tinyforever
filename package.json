@@ -1,0 +1,22 @@
+{
+  "author": {
+    "name": "Oliver Leics",
+    "email": "oliver.leics@gmail.com"
+  },
+  "name": "tinyforever",
+  "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/oleics/tinyforever.git"
+  },
+  "contributors": [
+  ],
+  "main": "./tinyforever",
+  "engines": {
+    "node": ">= v0.5.1"
+  },
+  "dependencies": {
+  },
+  "scripts": {
+  }
+}
