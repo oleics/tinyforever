@@ -1,8 +1,21 @@
 # tinyforever - limited replacement of forever
 
-[forever](https://github.com/nodejitsu/forever)
+[forever](https://github.com/nodejitsu/forever) is huge.
+
+[tinyforever](https://github.com/oleics/tinyforever) is lightweight.
+
+## Install
+
+``npm install tinyforever``
+
+## Motivation
+
+Initially created for [tinyhook](https://github.com/sergeyksv/tinyhook),
+a lightweight alternative to [hook.io](https://github.com/hookio).
 
 ## forever compatibility notes
+
+Projects using *tinyforever* can switch to *forever* at any time.
 
 * only forever.Monitor
 * only module-fork
