@@ -6,23 +6,29 @@
 
 var EventEmitter = require('events').EventEmitter,
     util = require('util'),
+    spawn = require('child_process').spawn,
+    devNullSteam = require('./devnullstream').devNullSteam,
     fork = require('child_process').fork;
 
 var Monitor = exports.Monitor = function(script, options) {
-  console.log(script, options);
   options = options || {};
   
   this.silent = options.silent || false;
   this.killTTL = options.killTTL;
   this.max = options.max;
   
+  this.fork = options.fork || false;
+  
   this.minUptime = typeof options.minUptime !== 'number' ? 0 : options.minUptime;
   this.spinSleepTime = options.spinSleepTime || null;
   
   this.args = options.options || [];
   this.cwd = options.cwd || null;
-  this._env = options.env || null;
+  this.hideEnv = options.hideEnv || [];
+  this._env = options.env || {};
+  this._hideEnv = options.hideEnv || {};
   
+  this.data = {};
   this.running = false;
   this.times = 0;
   
@@ -32,15 +38,39 @@ var Monitor = exports.Monitor = function(script, options) {
 util.inherits(Monitor, EventEmitter);
 
 Monitor.prototype.trySpawn = function() {
+  var self = this;
   try {
-    var child = fork(this.args[0], this.args.slice(1), {
-      cwd: this.cwd,
-      env: this._env
-    }, function() {
-      //console.log('Hook exit: %s', hookPath);
-    });
+    if(this.fork) {
+      var child = fork(this.args[0], this.args.slice(1), {
+        cwd: this.cwd,
+        env: this._getEnv()
+      }, function() {
+        console.log('child exit');
+      });
+    } else {
+      var child = spawn('node', this.args, {
+        cwd: this.cwd,
+        env: this._getEnv()
+      }, function() {
+        //console.log('Hook exit: %s', hookPath);
+      });
+      if(this.silent) {
+        child.stdout.pipe(new devNullSteam);
+        child.stderr.pipe(new devNullSteam);
+      } else {
+        child.stdout.pipe(process.stdout);
+        child.stderr.pipe(process.stderr);
+      }
+      child.stdout.on('data', function(data) {
+        self.emit('stdout', data);
+      });
+      child.stderr.on('data', function(data) {
+        self.emit('stderr', data);
+      });
+    }
     return child;
   } catch(err) {
+    console.error(err.stack||err);
     return;
   }
 };
@@ -111,6 +141,8 @@ Monitor.prototype.start = function(restart) {
       restartChild();
     }
   });
+  
+  return this;
 };
 
 Monitor.prototype.restart = function() {
@@ -166,4 +198,29 @@ Monitor.prototype.kill = function(forceStop) {
     self.emit('stop');
   }
   return this;
+};
+
+Monitor.prototype._getEnv = function () {
+  var self = this,
+      merged = {};
+
+  function addKey(key, source) {
+    merged[key] = source[key];
+  }
+
+  //
+  // Mixin the key:value pairs from `process.env` and the custom
+  // environment variables in `this._env`.
+  //
+  Object.keys(process.env).forEach(function (key) {
+    if (!self._hideEnv[key]) {
+      addKey(key, process.env);
+    }
+  });
+
+  Object.keys(this._env).forEach(function (key) {
+    addKey(key, self._env);
+  });
+
+  return merged;
 };
