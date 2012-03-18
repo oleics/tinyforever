@@ -4,7 +4,7 @@
     "email": "oliver.leics@gmail.com"
   },
   "name": "tinyforever",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "repository": {
     "type": "git",
     "url": "git://github.com/oleics/tinyforever.git"
@@ -13,7 +13,7 @@
   ],
   "main": "./tinyforever",
   "engines": {
-    "node": ">= v0.5.1"
+    "node": ">= 0.4.0"
   },
   "dependencies": {
   },

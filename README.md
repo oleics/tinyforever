@@ -18,7 +18,7 @@ a lightweight alternative to [hook.io](https://github.com/hookio).
 Projects using *tinyforever* can switch to *forever* at any time.
 
 * only forever.Monitor
-* only module-fork
+* only module-fork/spawn
 * Properties
   * child
   * running
@@ -33,11 +33,13 @@ Projects using *tinyforever* can switch to *forever* at any time.
 * Options
   * silent
   * max
+  * fork (node >= 0.5.1)
   * killTTL
   * minUptime
   * spinSleepTime
   * cwd
   * env
+  * hideEnv
   * options
 
 ## MIT License
