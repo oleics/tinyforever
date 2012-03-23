@@ -28,11 +28,14 @@ var Monitor = exports.Monitor = function(script, options) {
   this.hideEnv = options.hideEnv || [];
   this._env = options.env || {};
   this._hideEnv = {};
-  this.hideEnv.forEach(function(e) { self._hideEnv[e]=1; });
   
   this.data = {};
   this.running = false;
   this.times = 0;
+  
+  this.hideEnv.forEach(function(key) {
+    self._hideEnv[key] = true;
+  });
   
   this.args.unshift(script);
 };
