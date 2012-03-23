@@ -23,7 +23,7 @@ vows.describe('tinyforever/monitor/signal').addBatch({
 
           timer = setTimeout(function () {
             callback(new Error('Child did not die when killed by tinyforever'), child);
-          }, 3000);
+          }, 6000);
               
           child.on('exit', function () {
             callback.apply(null, [null].concat([].slice.call(arguments)));

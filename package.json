@@ -22,5 +22,6 @@
     "async": "0.1.x"
   },
   "scripts": {
+    "test": "vows test/*-test.js --isolate --spec"
   }
 }

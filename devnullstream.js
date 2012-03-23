@@ -3,5 +3,6 @@ var util = require('util'),
 
 var devNullSteam = exports.devNullSteam = function() {
   this.end = function() {};
+  this.write = function () {};
 };
 util.inherits(devNullSteam, stream.Stream);
