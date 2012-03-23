@@ -7,7 +7,7 @@
 var EventEmitter = require('events').EventEmitter,
     util = require('util'),
     spawn = require('child_process').spawn,
-    devNullSteam = require('./devnullstream').devNullSteam,
+    devNullStream = require('./devnullstream').devNullStream,
     fork = require('child_process').fork;
 
 var Monitor = exports.Monitor = function(script, options) {
@@ -56,8 +56,8 @@ Monitor.prototype.trySpawn = function() {
       }, function() {
         //console.log('Hook exit: %s', hookPath);
       });
-      var stdout = this.silent ? new devNullSteam() : process.stdout;
-      var stderr = this.silent ? new devNullSteam() : process.stderr;
+      var stdout = this.silent ? new devNullStream() : process.stdout;
+      var stderr = this.silent ? new devNullStream() : process.stderr;
       child.stdout.on('data', function(data) {
         self.emit('stdout', data);
         stdout.write(data);
