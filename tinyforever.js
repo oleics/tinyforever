@@ -53,7 +53,7 @@ Monitor.prototype.trySpawn = function() {
         console.log('child exit');
       });
     } else {
-      var child = spawn('node', this.args, {
+      var child = spawn(process.execPath, this.args, {
         cwd: this.cwd,
         env: this._getEnv()
       }, function() {
