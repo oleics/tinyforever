@@ -9,9 +9,10 @@
 var assert = require('assert'),
     path = require('path'),
     vows = require('vows'),
-    tinyforever = require('../tinyforever');
+    tinyforever = require('../tinyforever'),
+    fork = require('child_process').fork;
 
-vows.describe('tinyforever/monitor/fork').addBatch({
+var forkBatch = {
   "When using tinyforever": {
     "and spawning a script that uses `process.send()`": {
       "using the 'native' fork": {
@@ -32,4 +33,14 @@ vows.describe('tinyforever/monitor/fork').addBatch({
       }
     }
   }
-}).export(module);
+}
+
+var noForkBatch = {
+	"Fork is skipped":{
+		topic:true,
+		"for node < 0.5.x":function () {}
+	}
+}
+
+vows.describe('tinyforever/monitor/fork').addBatch(fork?forkBatch:noForkBatch
+).export(module);

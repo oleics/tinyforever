@@ -32,6 +32,6 @@ function runTest(f, cb) {
       cb();
     }
   });
-  p.stdout.pipe(process.stdout);
-  p.stderr.pipe(process.stderr);
+  p.stdout.pipe(process.stdout,{end:false});
+  p.stderr.pipe(process.stderr,{end:false});
 }

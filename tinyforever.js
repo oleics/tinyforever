@@ -11,6 +11,7 @@ var EventEmitter = require('events').EventEmitter,
     fork = require('child_process').fork;
 
 var Monitor = exports.Monitor = function(script, options) {
+  var self = this;
   options = options || {};
   
   this.silent = options.silent || false;
@@ -26,7 +27,8 @@ var Monitor = exports.Monitor = function(script, options) {
   this.cwd = options.cwd || null;
   this.hideEnv = options.hideEnv || [];
   this._env = options.env || {};
-  this._hideEnv = options.hideEnv || {};
+  this._hideEnv = {};
+  this.hideEnv.forEach(function(e) { self._hideEnv[e]=1; });
   
   this.data = {};
   this.running = false;
@@ -40,7 +42,7 @@ util.inherits(Monitor, EventEmitter);
 Monitor.prototype.trySpawn = function() {
   var self = this;
   try {
-    if(this.fork) {
+    if(this.fork && fork) {
       var child = fork(this.args[0], this.args.slice(1), {
         cwd: this.cwd,
         env: this._getEnv()
@@ -54,18 +56,15 @@ Monitor.prototype.trySpawn = function() {
       }, function() {
         //console.log('Hook exit: %s', hookPath);
       });
-      if(this.silent) {
-        child.stdout.pipe(new devNullSteam);
-        child.stderr.pipe(new devNullSteam);
-      } else {
-        child.stdout.pipe(process.stdout);
-        child.stderr.pipe(process.stderr);
-      }
+      var stdout = this.silent ? new devNullSteam() : process.stdout;
+      var stderr = this.silent ? new devNullSteam() : process.stderr;
       child.stdout.on('data', function(data) {
         self.emit('stdout', data);
+        stdout.write(data);
       });
       child.stderr.on('data', function(data) {
         self.emit('stderr', data);
+        stderr.write(data);
       });
     }
     return child;
@@ -177,6 +176,8 @@ Monitor.prototype.kill = function(forceStop) {
       if (this.killTTL) {
         var timer = setTimeout(function () {
           try {
+			// stupid fix for 0.4.x
+			if (!self.fork) child.killed = false;
             child.kill('SIGKILL');
           }
           catch (e) {
