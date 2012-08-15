@@ -63,10 +63,12 @@ Monitor.prototype.trySpawn = function() {
       });
       var stdout = this.silent ? new devNullStream() : process.stdout;
       var stderr = this.silent ? new devNullStream() : process.stderr;
+      
       child.stdout.on('data', function(data) {
         self.emit('stdout', data);
         stdout.write(data);
       });
+      
       child.stderr.on('data', function(data) {
         self.emit('stderr', data);
         stderr.write(data);
