@@ -33,6 +33,8 @@ var Monitor = exports.Monitor = function(script, options) {
   this.running = false;
   this.times = 0;
   
+  this.command = options.command || null;
+  
   this.hideEnv.forEach(function(key) {
     self._hideEnv[key] = true;
   });
@@ -53,7 +55,7 @@ Monitor.prototype.trySpawn = function() {
         console.log('child exit');
       });
     } else {
-      var child = spawn(process.execPath, this.args, {
+      var child = spawn(this.command ? this.command : process.execPath, this.args, {
         cwd: this.cwd,
         env: this._getEnv()
       }, function() {
