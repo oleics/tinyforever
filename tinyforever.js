@@ -33,6 +33,8 @@ var Monitor = exports.Monitor = function(script, options) {
   this.running = false;
   this.times = 0;
   
+  this.command = options.command || null;
+  
   this.hideEnv.forEach(function(key) {
     self._hideEnv[key] = true;
   });
@@ -53,7 +55,7 @@ Monitor.prototype.trySpawn = function() {
         console.log('child exit');
       });
     } else {
-      var child = spawn(process.execPath, this.args, {
+      var child = spawn(this.command ? this.command : process.execPath, this.args, {
         cwd: this.cwd,
         env: this._getEnv()
       }, function() {
@@ -61,10 +63,12 @@ Monitor.prototype.trySpawn = function() {
       });
       var stdout = this.silent ? new devNullStream() : process.stdout;
       var stderr = this.silent ? new devNullStream() : process.stderr;
+      
       child.stdout.on('data', function(data) {
         self.emit('stdout', data);
         stdout.write(data);
       });
+      
       child.stderr.on('data', function(data) {
         self.emit('stderr', data);
         stderr.write(data);
